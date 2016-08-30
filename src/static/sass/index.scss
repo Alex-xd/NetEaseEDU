@@ -1,0 +1,15 @@
+@charset "UTF-8";
+@import "lib/reset.css";
+@import "common/global-set";
+
+//
+//--------------------
+
+//顶部tip
+//--------------------
+.top-tips {
+    width: 100%;
+    &-p {
+        line-height: 36px;
+    }
+}

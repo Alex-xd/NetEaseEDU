@@ -1,0 +1,14 @@
+$global-green: #39a030;
+$global-bg: #f8f8f8;
+$global-w: 1206px;
+
+.global-center {
+    margin-left: auto;
+    margin-right: auto;
+    width: $global-w;
+}
+
+body {
+    min-width: $global-w;
+}
+

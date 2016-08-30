@@ -1,0 +1,12 @@
+.global-center {
+  margin-left: auto;
+  margin-right: auto;
+  width: 1206px; }
+
+body {
+  min-width: 1206px; }
+
+.top-tips {
+  width: 100%; }
+  .top-tips-p {
+    line-height: 36px; }
