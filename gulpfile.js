@@ -32,7 +32,7 @@ gulp.task('sass', function(cb) { // 传入一个回调函数，因此引擎可�
         // .pipe(autoprefixer({
         //     browsers: ['> 1%', 'not ie <= 8']
         // }))
-        // .pipe(sourcemaps.write())
+        // // .pipe(sourcemaps.write())
         // .pipe(gulp.dest('src/static/css'));
     console.log('sass 文件处理完毕！');
     cb(err); // 如果 err 不是 null 和 undefined，流程会被结束掉，'two' 不会被执行
@@ -46,7 +46,7 @@ gulp.task('css', ['sass'], function(cb) { // 标注一个依赖，依赖的任�
     // cb(err);
 });
 //3.gulp 实时浏览器刷新
-gulp.task('live',['sass'], function() {
+gulp.task('live', function() {
     livereload.listen();
     //var server = livereload(9000);
 
@@ -60,7 +60,7 @@ gulp.task('live',['sass'], function() {
     });
 });
 // 执行所有样式相关任务，并且开启监视
-gulp.task('css-watch', ['live'], function() {
+gulp.task('css-watch', ['sass'], function() {
     console.log('正在监视 scss 及 css 文件变动');
     // 监听 sass
     var watcher = gulp.watch('src/static/sass/**/*.scss', ['css']); // 监视那些文件的变动，以及变动之后执行的任务

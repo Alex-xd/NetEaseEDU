@@ -1,14 +1,33 @@
-$global-green: #39a030;
-$global-bg: #f8f8f8;
-$global-w: 1206px;
+$mainGreen: #39a030;
+$mainBg: #f8f8f8;
+$lightGray: #666;
+$darkGray: #333;
+$mainWidth: 1206px;
+$mainFont: "Microsoft YaHei", Helvetica, GillSansMT, sans-serif;
+
+@mixin boxShadow {
+    -webkit-box-shadow: 0 1px 0 1px #ecebeb;
+       -moz-box-shadow: 0 1px 0 1px #ecebeb;
+            box-shadow: 0 1px 0 1px #ecebeb;
+}
 
 .global-center {
-    margin-left: auto;
+    width: $mainWidth;
     margin-right: auto;
-    width: $global-w;
+    margin-left: auto;
 }
 
 body {
-    min-width: $global-w;
+    min-width: $mainWidth;
 }
 
+.ghost-center {
+    position: relative;
+}
+.ghost-center::before {
+    display: inline-block;
+    content: " ";
+    width: 1%;
+    height: 100%;
+    vertical-align: middle;
+}

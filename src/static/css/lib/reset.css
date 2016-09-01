@@ -32,6 +32,8 @@ td {
     padding: 0;
     font-size: 12px;
     font-weight: normal;
+    font-family: "Microsoft YaHei", Helvetica, GillSansMT, sans-serif;
+;
 }
 table {
     border-collapse: collapse;
@@ -109,4 +111,11 @@ legend {
     content:'';
     display:block;
     clear:both;
+}
+
+button:hover{
+    cursor: pointer;
+}
+button:focus{
+    outline:none;
 }
