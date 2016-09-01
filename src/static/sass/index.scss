@@ -170,9 +170,15 @@
     height: 460px;
     margin: 0 auto;
     &-ul {
+        position: relative;
         width: 300%;
         &-li {
-            float: left;
+            position: absolute;
+            left: 0;
+            display: none;
+        }
+        .on {
+            display: list-item;
         }
     }
     &-dots {
@@ -495,9 +501,9 @@
 
         @include boxShadow();
         &-scroll-wrapper {
+            position: relative;
             overflow: hidden;
             height: 721px;
-            position: relative;
         }
         h2 {
             height: 55px;
@@ -622,8 +628,10 @@ footer {
 //--------------------
 .popup-video {
     position: fixed;
+    z-index: 999;
     top: 50%;
     left: 50%;
+    display: none;
     width: 950px;
     height: 676px;
     margin-top: -338px;
@@ -639,6 +647,15 @@ footer {
         width: 887px;
         margin: 0 auto;
     }
+    .close {
+        position: absolute;
+        top: 12px;
+        right: 10px;
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        background: url("../img/close.gif") no-repeat;
+    }
 }
 
 //登录弹窗
@@ -648,10 +665,12 @@ footer {
     z-index: 11;
     top: 50%;
     left: 50%;
+    display: none;
     width: 386px;
     height: 288px;
     margin-top: -144px;
     margin-left: -193px;
+    opacity: 0;
     background: #fff;
     h2 {
         line-height: 18px;

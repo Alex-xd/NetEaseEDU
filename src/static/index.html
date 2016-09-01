@@ -47,24 +47,23 @@
 
 
 <!--大banner盒子-->
-<div class="banner">
-    <ul class="banner-ul clear-float" style="left:-100%;">
-        <li class="banner-ul-li">
+<div class="banner" id="J_banner">
+    <ul class="banner-ul clear-float">
+        <li class="banner-ul-li J_carousel-imgs on">
             <a href=""><img src="img/banner1.jpg" alt="1"></a>
         </li>
-        <li class="banner-ul-li">
-            <a href=""><img src="img/banner2.jpg" alt="2"></a>
-
+        <li class="banner-ul-li J_carousel-imgs">
+            <a href=""><img src="img/banner2.jpg" alt="2" ></a>
         </li>
-        <li class="banner-ul-li">
+        <li class="banner-ul-li J_carousel-imgs">
             <a href=""><img src="img/banner3.jpg" alt="3"></a>
         </li>
     </ul>
 
-    <div class="banner-dots">
-        <span class="on"></span>
-        <span></span>
-        <span></span>
+    <div class="banner-dots" id="J_banner-dots">
+        <span class="on" data-id="0"></span>
+        <span data-id="1"></span>
+        <span data-id="2"></span>
     </div>
 </div>
 
@@ -73,17 +72,17 @@
     <section>
         <h2>网易公开课</h2>
         <p>推出国内外名校公开课，涉及广泛的学科，名校老师认真讲解深度剖析，网易视频公开课频道搭建起强有力的网络视频教学平台。</p>
-        <a href="#">了解更多 ></a>
+        <a href="http://open.163.com/">了解更多 ></a>
     </section>
     <section>
         <h2>云课堂</h2>
         <p>网易旗下大型在线学习平台，该平台面向学习者提供海量免费、优质课程,创新的个性化学习体验，自由开放的交流互动环境。</p>
-        <a href="#">了解更多 ></a>
+        <a href="http://study.163.com/">了解更多 ></a>
     </section>
     <section>
         <h2>中国大学MOOC</h2>
         <p>是爱课程网携手云课堂打造的在线学习平台，每一个有提升愿望的人,都可以在这里学习中国最好的大学课程，学完还能获得认证证书。</p>
-        <a href="#">了解更多 ></a>
+        <a href="http://www.icourse163.org/">了解更多 ></a>
     </section>
 </article>
 
@@ -109,40 +108,40 @@
             <div class="course-list clear-float" id="J_course-list">
                 <!--用juicer渲染-->
                 <!--<section class="course-list-item">-->
-                    <!--<img src="img/course.jpg" alt="" width="223" height="124">-->
-                    <!--<h2 class="course-list-item-title">大大大撒打算打算打算</h2>-->
-                    <!--<a href="" class="course-list-item-author">极客公园</a>-->
-                    <!--<span class="course-list-item-people">465</span>-->
-                    <!--<h3 class="course-list-item-price">¥59</h3>-->
-                    <!--&lt;!&ndash;详情&ndash;&gt;-->
-                    <!--<section class="course-list-item-details">-->
-                        <!--<div class="course-list-item-details-header">-->
-                            <!--<img src="img/course.jpg" alt="" width="223" height="124">-->
-                            <!--<div class="course-list-item-details-header-info">-->
-                                <!--<h3 class="course-list-item-details-header-info-title">如何低成本制作在线课程</h3>-->
-                                <!--<div class="course-list-item-details-header-info-leaner">-->
-                                    <!--62211人在学-->
-                                <!--</div>-->
-                                <!--<div class="course-list-item-details-header-info-distor">-->
-                                    <!--发布者: <a href="" target="_blank">网易云课堂</a>-->
-                                <!--</div>-->
-                                <!--<div class="course-list-item-details-header-info-category">-->
-                                    <!--分类: 暂无-->
-                                <!--</div>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--<div class="course-list-item-details-content">-->
-                            <!--<p>制作在线课程，并不是将线下课程录像上网-->
-                               <!--那么简单。好的在线课程，必须针对在线教-->
-                               <!--育特点进行设计和制作。本课程总结了让课-->
-                               <!--程更适合在线学习的若干要点，和多项制作-->
-                               <!--经验，力图帮助您用最少的时间、最低的成-->
-                               <!--本，制作出精彩的在线课程。课程本身就是-->
-                               <!--这套制作方案最好的演示。共包括准备工作-->
-                               <!--、录制课程和后期制作三个部分，持续更新-->
-                               <!--中</p>-->
-                        <!--</div>-->
-                    <!--</section>-->
+                <!--<img src="img/course.jpg" alt="" width="223" height="124">-->
+                <!--<h2 class="course-list-item-title">大大大撒打算打算打算</h2>-->
+                <!--<a href="" class="course-list-item-author">极客公园</a>-->
+                <!--<span class="course-list-item-people">465</span>-->
+                <!--<h3 class="course-list-item-price">¥59</h3>-->
+                <!--&lt;!&ndash;详情&ndash;&gt;-->
+                <!--<section class="course-list-item-details">-->
+                <!--<div class="course-list-item-details-header">-->
+                <!--<img src="img/course.jpg" alt="" width="223" height="124">-->
+                <!--<div class="course-list-item-details-header-info">-->
+                <!--<h3 class="course-list-item-details-header-info-title">如何低成本制作在线课程</h3>-->
+                <!--<div class="course-list-item-details-header-info-leaner">-->
+                <!--62211人在学-->
+                <!--</div>-->
+                <!--<div class="course-list-item-details-header-info-distor">-->
+                <!--发布者: <a href="" target="_blank">网易云课堂</a>-->
+                <!--</div>-->
+                <!--<div class="course-list-item-details-header-info-category">-->
+                <!--分类: 暂无-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="course-list-item-details-content">-->
+                <!--<p>制作在线课程，并不是将线下课程录像上网-->
+                <!--那么简单。好的在线课程，必须针对在线教-->
+                <!--育特点进行设计和制作。本课程总结了让课-->
+                <!--程更适合在线学习的若干要点，和多项制作-->
+                <!--经验，力图帮助您用最少的时间、最低的成-->
+                <!--本，制作出精彩的在线课程。课程本身就是-->
+                <!--这套制作方案最好的演示。共包括准备工作-->
+                <!--、录制课程和后期制作三个部分，持续更新-->
+                <!--中</p>-->
+                <!--</div>-->
+                <!--</section>-->
                 <!--</section>-->
             </div>
 
@@ -210,23 +209,24 @@
     <script data-main="js/main.js" src="js/require.js"></script>
 </footer>
 
-<section class="popup-video" style="display: none;">
+<section class="popup-video" id="J_popup-video">
     <h2>请观看下面的视频</h2>
     <div class="video">
-        <video src="http://mov.bn.netease.com/open-movie/nos/mp4/2014/12/30/SADQ86F5S_shd.mp4" controls
-               poster="img/video-play-poster.gif" width="887" height="564">抱歉,您的浏览器版本过低,视频无法播放。
+        <video src="" controls poster="img/video-play-poster.gif" width="887" height="564">
+            抱歉,您的浏览器版本过低,视频无法播放。
         </video>
     </div>
+    <a href="javascript:;" class="close" id="J_close-popup-video"></a>
 </section>
 
-<section class="popup-login" id="J_popup-login" style="display: none;opacity: 0;">
+<section class="popup-login" id="J_popup-login">
     <h2>登录网易云课堂</h2>
     <form action="" autocomplete="on" name="login" method="get">
         <input id="J_uid" type="text" autofocus name="用户名" required="required" maxlength="20" value="">
         <input id="J_pwd" type="password" name="密码" required="required" maxlength="20" value="">
     </form>
     <button type="submit" id="J_submit">登录</button>
-    <a href="#" class="close" id="J_close"></a>
+    <a href="javascript:;" class="close" id="J_close-popup-login"></a>
 </section>
 <div class="bg-wrap" id="J_popup-wrap"
      style="display: none;position: fixed;top:0;left:0;width: 100%;height: 100%;background: #000;opacity: .5;z-index:10;"></div>

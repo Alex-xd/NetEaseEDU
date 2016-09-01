@@ -17,6 +17,7 @@ require(['jquery', 'funcTpl', 'API', 'jqcookie', 'juicer'], function ($, funtpl,
         init: function () {
             index.toptipsControl();
             index.loginControl();
+            index.carousel();
             index.courseTabSwitch();
             index.pagination();
             index.getHottestCourse();
@@ -24,7 +25,7 @@ require(['jquery', 'funcTpl', 'API', 'jqcookie', 'juicer'], function ($, funtpl,
         },
         //顶栏"不再提示"功能
         toptipsControl: function () {
-            Cookies.remove('toptipDismissed', {path: '/'});  //测试用
+            // Cookies.remove('toptipDismissed', {path: '/'});  //测试用
             var $toptips = $('#J_top-tips');
 
             if (Cookies.get('toptipDismissed', {path: '/'}) !== 'true') {
@@ -49,7 +50,7 @@ require(['jquery', 'funcTpl', 'API', 'jqcookie', 'juicer'], function ($, funtpl,
 
             //点击关注,如果未登录,则显示登录窗口
             $followBtn.on('click', function () {
-                Cookies.remove('loginSuc', {path: '/'});  //测试用
+                // Cookies.remove('loginSuc', {path: '/'});  //测试用
                 if (Cookies.get('loginSuc', {path: '/'}) !== 'true') {
                     $popupWrap.show();
                     $login.show().css('top', '+=30').animate({top: '-=30px', opacity: '1'}, 500);
@@ -92,7 +93,7 @@ require(['jquery', 'funcTpl', 'API', 'jqcookie', 'juicer'], function ($, funtpl,
             };
 
             //登录窗口关闭
-            $('#J_close').on('click', function () {
+            $('#J_close-popup-login').on('click', function () {
                 $popupWrap.hide();
                 $login.hide();
             });
@@ -116,8 +117,42 @@ require(['jquery', 'funcTpl', 'API', 'jqcookie', 'juicer'], function ($, funtpl,
         },
 
         //轮播
-        Carousel: function () {
+        carousel: function () {
+            var $banner = $('#J_banner'),
+                $imgs = $('.J_carousel-imgs'),
+                $dots = $('#J_banner-dots span'),
+                bindex = 1,
+                timer = null;
 
+            $banner.on('mouseover', function () {
+                clearInterval(timer);
+            });
+            $banner.on('mouseout', function () {
+                autoPlay();
+            });
+            $dots.on('click', function () {
+                var _index = $(this).attr('data-id');
+                _turnToBanner(_index);
+            });
+
+            function autoPlay() {
+                timer = setInterval(function () {
+                    _turnToBanner(bindex);
+                    bindex++;
+                    if (bindex > 2) {
+                        bindex = 0;
+                    }
+                }, 5000);
+            }
+
+            function _turnToBanner(index) {
+                $imgs.fadeOut();
+                $imgs.eq(index).fadeIn();
+                $dots.removeClass('on');
+                $dots.eq(index).addClass('on');
+            }
+
+            autoPlay();
         },
 
         //课程tab切换
@@ -184,10 +219,8 @@ require(['jquery', 'funcTpl', 'API', 'jqcookie', 'juicer'], function ($, funtpl,
 
                 var dtd = $.Deferred();
                 $.when(index._getCourseCard(gotoPage, 20, type, dtd)).done(function () {
-                    for (var i = 0; i < 8; i++) {
-                        $numBtn.eq(i).removeClass('on');
-                        $this.addClass('on');
-                    }
+                    $numBtn.eq.removeClass('on');
+                    $this.addClass('on');
                     $('body').animate({scrollTop: "-=1500px"}, 800);
                 });
             });
@@ -220,7 +253,6 @@ require(['jquery', 'funcTpl', 'API', 'jqcookie', 'juicer'], function ($, funtpl,
                 var timer = setInterval(function () {
                     $showWrap.animate({top: '-=71px'}, 500);
                     offsetTop = offsetTop - 71;
-                    console.log(originTop - offsetTop);
 
                     if (originTop - offsetTop > 639) {
                         $showWrap.animate({top: 0}, 1500);
@@ -251,8 +283,23 @@ require(['jquery', 'funcTpl', 'API', 'jqcookie', 'juicer'], function ($, funtpl,
 
         //视频
         getIntroVideo: function () {
-            var $Preview = $('#J_sidebar-org-video');
-            
+            var $preview = $('#J_sidebar-org-video'),
+                $popupVideo = $('#J_popup-video'),
+                $video = $popupVideo.find('video'),
+                $popupWrap = $('#J_popup-wrap');
+
+            $preview.on('click', function () {
+                $popupVideo.fadeIn(1000);
+                $video.attr('src', 'http://mov.bn.netease.com/open-movie/nos/mp4/2014/12/30/SADQ86F5S_shd.mp4');
+                $popupWrap.show();
+
+            });
+
+            $('#J_close-popup-video').on('click', function () {
+                $video.attr('src', '');
+                $popupVideo.hide();
+                $popupWrap.hide();
+            });
         },
 
         //课程模板
