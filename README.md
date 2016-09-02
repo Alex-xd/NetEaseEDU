@@ -1,10 +1,11 @@
 ## NetEaseEDU
-网易教育产品部首页。
+网易前端工程师微专业结课大作业
+网易教育产品部首页
 
 技术选型：
 
 - 项目构建管理: volo
-- 模块化: requireJS
+- 模块化: requireJS
 - 模板引擎: juicer
 - CSS预编译: SASS
 - 自动化构建: gulp
