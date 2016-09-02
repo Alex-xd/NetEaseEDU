@@ -4,7 +4,7 @@
 技术选型：
 
 - 项目构建管理: volo
-- 模块化: requireJS
+- 模块化: requireJS
 - 模板引擎: juicer
 - CSS预编译: SASS
 - 自动化构建: gulp
