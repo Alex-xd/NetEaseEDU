@@ -8,11 +8,18 @@
 // except for 'app' ones, which are in a sibling
 // directory.
 require.config({
-    baseUrl: 'lib', //lib下的直接调文件名，不用加任何路径
+    baseUrl: 'lib',
     paths: {
-        app: '../app',   //app下的文件前面加上'app/'路径调用	
-        api: '../app/api'	 //同理↑
+        app: '../app',
+        api: '../app/api'
+    },
+    shim: {
+        'jquery.pagination': {
+            deps: ['jquery'],
+            exports: 'jQuery.fn.pagination'
+        }
     }
+
 });
 
 // Start loading the main app file. Put all of

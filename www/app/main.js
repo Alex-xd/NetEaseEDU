@@ -2,9 +2,9 @@
  *  Created by boyuan on 8/29/16.
  */
 
-define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function($, funtpl, API, Cookies) {
+define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.pagination', 'juicer'], function ($, funtpl, API, Cookies, pagination) {
     var index = {
-        init: function() {
+        init: function () {
             index.toptipsControl();
             index.loginControl();
             index.carousel();
@@ -12,23 +12,35 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
             index.pagination();
             index.getHottestCourse();
             index.getIntroVideo();
+            index.paginate();
         },
+        // paginate: function () {
+        //     $('#pagination-container').pagination({
+        //         dataSource: [1, 2, 3, 4, 5, 6, 7],
+        //         callback: function (data, pagination) {
+        //             var html = Handlebars.compile($('#template-demo').html(), {
+        //                 data: data
+        //             });
+        //             $('#data-container').html(html);
+        //         }
+        //     })
+        // },
         //顶栏"不再提示"功能
-        toptipsControl: function() {
+        toptipsControl: function () {
             // Cookies.remove('toptipDismissed', {path: '/'});  //测试用
             var $toptips = $('#J_top-tips');
 
-            if (Cookies.get('toptipDismissed', { path: '/' }) !== 'true') {
+            if (Cookies.get('toptipDismissed', {path: '/'}) !== 'true') {
                 $toptips.fadeIn();
             }
-            $('#J_top-tips-dismiss').on('click', function() {
-                Cookies.set('toptipDismissed', 'true', { expires: 7, path: '/' });
+            $('#J_top-tips-dismiss').on('click', function () {
+                Cookies.set('toptipDismissed', 'true', {expires: 7, path: '/'});
                 $toptips.fadeOut();
             });
         },
 
         //登录
-        loginControl: function() {
+        loginControl: function () {
             var $followBtn = $('#J_header-left-follow-btn'),
                 $login = $('#J_popup-login'),
                 $submit = $('#J_submit'),
@@ -39,11 +51,11 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
                 };
 
             //点击关注,如果未登录,则显示登录窗口
-            $followBtn.on('click', function() {
-                Cookies.remove('loginSuc', { path: '/' }); //测试用
-                if (Cookies.get('loginSuc', { path: '/' }) !== 'true') {
+            $followBtn.on('click', function () {
+                Cookies.remove('loginSuc', {path: '/'}); //测试用
+                if (Cookies.get('loginSuc', {path: '/'}) !== 'true') {
                     $popupWrap.show();
-                    $login.show().css('top', '+=30').animate({ top: '-=30px', opacity: '1' }, 500);
+                    $login.show().css('top', '+=30').animate({top: '-=30px', opacity: '1'}, 500);
                 }
             });
 
@@ -53,14 +65,14 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
                 param.password = $('#J_pwd').val();
                 if (param.userName && param.password) {
                     $submit.html('正在登录..').attr('disabled', 'true');
-                    $.get(API.login, param, function(rsp) {
+                    $.get(API.login, param, function (rsp) {
                         if (rsp == 0) {
-                            Cookies.set('loginSuc', 'true', { path: '/' }); //设置登录成功 cookie,
+                            Cookies.set('loginSuc', 'true', {path: '/'}); //设置登录成功 cookie,
                             $submit.html('登录成功');
 
                             //关注
                             var dtd = $.Deferred();
-                            $.when(index._follow($followBtn, dtd)).done(function() {
+                            $.when(index._follow($followBtn, dtd)).done(function () {
                                 $login.hide();
                                 $popupWrap.hide();
                             });
@@ -74,7 +86,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
 
             //绑定登录
             $submit.on('click', login);
-            document.onkeydown = function(keyEvent) {
+            document.onkeydown = function (keyEvent) {
                 keyEvent = keyEvent ? keyEvent : window.event;
                 var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                 if (keyvalue == 13)
@@ -82,18 +94,18 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
             };
 
             //登录窗口关闭
-            $('#J_close-popup-login').on('click', function() {
+            $('#J_close-popup-login').on('click', function () {
                 $popupWrap.hide();
                 $login.hide();
             });
         },
 
         //关注
-        _follow: function($followBtn, dtd) {
+        _follow: function ($followBtn, dtd) {
             var $fans_count = $('#J_fans');
-            $.get(API.changeFollowState, function(rsp) {
+            $.get(API.changeFollowState, function (rsp) {
                 if (rsp == 1) {
-                    Cookies.set('followSuc', 'true', { path: '/' }); //设置关注成功的 cookie(followSuc),
+                    Cookies.set('followSuc', 'true', {path: '/'}); //设置关注成功的 cookie(followSuc),
                     //关注”按钮变成不可点的“已关注”状态。
                     $followBtn.hide();
                     $followBtn.next().show();
@@ -107,26 +119,26 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
         },
 
         //轮播
-        carousel: function() {
+        carousel: function () {
             var $banner = $('#J_banner'),
                 $imgs = $('.J_carousel-imgs'),
                 $dots = $('#J_banner-dots span'),
                 bindex = 1,
                 timer = null;
 
-            $banner.on('mouseover', function() {
+            $banner.on('mouseover', function () {
                 clearInterval(timer);
             });
-            $banner.on('mouseout', function() {
+            $banner.on('mouseout', function () {
                 autoPlay();
             });
-            $dots.on('click', function() {
+            $dots.on('click', function () {
                 var _index = $(this).attr('data-id');
                 _turnToBanner(_index);
             });
 
             function autoPlay() {
-                timer = setInterval(function() {
+                timer = setInterval(function () {
                     _turnToBanner(bindex);
                     bindex++;
                     if (bindex > 2) {
@@ -146,20 +158,20 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
         },
 
         //课程tab切换
-        courseTabSwitch: function() {
+        courseTabSwitch: function () {
             var $btn1 = $('#J_course-selectTab a:first'),
                 $btn2 = $btn1.next();
 
-            $btn1.on('click', function() {
+            $btn1.on('click', function () {
                 var dtd = $.Deferred(); //新建异步对象dtd
-                $.when(index._getCourseCard(0, 20, $btn1.attr('data-type'), dtd)).done(function() {
+                $.when(index._getCourseCard(0, 20, $btn1.attr('data-type'), dtd)).done(function () {
                     $btn2.removeClass('selected');
                     $btn1.addClass('selected');
                 });
             });
-            $btn2.on('click', function() {
+            $btn2.on('click', function () {
                 var dtd = $.Deferred(); //新建异步对象dtd
-                $.when(index._getCourseCard(0, 20, $btn2.attr('data-type'), dtd)).done(function() {
+                $.when(index._getCourseCard(0, 20, $btn2.attr('data-type'), dtd)).done(function () {
                     $btn1.removeClass('selected');
                     $btn2.addClass('selected');
                 });
@@ -175,7 +187,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
          * @param type      分类
          * @param dtd       jquery异步对象
          */
-        _getCourseCard: function(pageNo, psize, type, dtd) {
+        _getCourseCard: function (pageNo, psize, type, dtd) {
             if ($(window).width() < 1206) psize = 15;
             var param = {
                     pageNo: pageNo,
@@ -185,7 +197,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
                 $showWrap = $('#J_course-list');
 
             $showWrap.html('课程列表加载中...');
-            $.get(API.getCoures, param, function(rsp) {
+            $.get(API.getCoures, param, function (rsp) {
                 var tpldata = {};
 
                 rsp = JSON.parse(rsp);
@@ -204,18 +216,18 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
         },
 
         //分页
-        pagination: function() {
+        pagination: function () {
             var $numBtn = $('.course-paging-num'),
                 $next = $('#J_paging-next'),
                 $prev = $('#J_paging-prev');
 
-            $numBtn.on('click', function() {
+            $numBtn.on('click', function () {
                 turnToPage($(this).html());
             });
-            $next.on('click', function() {
+            $next.on('click', function () {
                 $('.course-paging-num.on').next().trigger('click');
             });
-            $prev.on('click', function() {
+            $prev.on('click', function () {
                 $('.course-paging-num.on').prev().trigger('click');
             });
 
@@ -223,7 +235,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
                 var type = $('#J_course-selectTab a.selected').attr('data-type');
 
                 var dtd = $.Deferred();
-                $.when(index._getCourseCard(_index, 20, type, dtd)).done(function() {
+                $.when(index._getCourseCard(_index, 20, type, dtd)).done(function () {
                     $numBtn.removeClass('on');
                     $numBtn.eq(_index - 1).addClass('on');
                 });
@@ -232,8 +244,8 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
         },
 
         //侧栏
-        getHottestCourse: function() {
-            $.get(API.getHotcoures, function(rsp) {
+        getHottestCourse: function () {
+            $.get(API.getHotcoures, function (rsp) {
                 var tpldata = {},
                     $showWrap = $('#juicer-hottest-wrapper');
 
@@ -248,12 +260,12 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
                 var originTop = $showWrap.offset().top,
                     offsetTop = originTop;
 
-                var timer = setInterval(function() {
-                    $showWrap.animate({ top: '-=71px' }, 500);
+                var timer = setInterval(function () {
+                    $showWrap.animate({top: '-=71px'}, 500);
                     offsetTop = offsetTop - 71;
 
                     if (originTop - offsetTop > 639) {
-                        $showWrap.animate({ top: 0 }, 1500);
+                        $showWrap.animate({top: 0}, 1500);
                         offsetTop = originTop;
                     }
 
@@ -261,16 +273,16 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
                 }, 5000);
 
 
-                $showWrap.on('mouseover', function() {
+                $showWrap.on('mouseover', function () {
                     clearInterval(timer);
                 });
-                $showWrap.on('mouseout', function() {
-                    timer = setInterval(function() {
-                        $showWrap.animate({ top: '-=71px' }, 500);
+                $showWrap.on('mouseout', function () {
+                    timer = setInterval(function () {
+                        $showWrap.animate({top: '-=71px'}, 500);
                         offsetTop = offsetTop - 71;
 
                         if (originTop - offsetTop > 639) {
-                            $showWrap.animate({ top: 0 }, 1500);
+                            $showWrap.animate({top: 0}, 1500);
                             offsetTop = originTop;
                         }
                     }, 5000);
@@ -279,20 +291,20 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
         },
 
         //视频
-        getIntroVideo: function() {
+        getIntroVideo: function () {
             var $preview = $('#J_sidebar-org-video'),
                 $popupVideo = $('#J_popup-video'),
                 $video = $popupVideo.find('video'),
                 $popupWrap = $('#J_popup-wrap');
 
-            $preview.on('click', function() {
+            $preview.on('click', function () {
                 $popupVideo.fadeIn(1000);
                 $video.attr('src', 'http://mov.bn.netease.com/open-movie/nos/mp4/2014/12/30/SADQ86F5S_shd.mp4');
                 $popupWrap.show();
 
             });
 
-            $('#J_close-popup-video').on('click', function() {
+            $('#J_close-popup-video').on('click', function () {
                 $video.attr('src', '');
                 $popupVideo.hide();
                 $popupWrap.hide();
@@ -301,7 +313,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
 
         // //课程模板
         // _courseTpl: function() {
-            
+
         //      {@each list as item}
         //      <section class="course-list-item">
         //      <img src="${item.middlePhotoUrl}" alt="" width="223" height="124">
@@ -334,12 +346,12 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
         //      </section>
         //      </section>
         //      {@/each}
-             
+
         // },
 
         // //侧边栏内容模板
         // _sidebarTpl: function() {
-            
+
         //      {@each list as item}
         //      <div class="sidebar-hottest-item">
         //      <img src="${item.smallPhotoUrl}" alt="${item.name}">
@@ -347,7 +359,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function(
         //      <span>${item.learnerCount}</span>
         //      </div>
         //      {@/each}
-             
+
         // }
     };
 
