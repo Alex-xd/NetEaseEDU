@@ -12,14 +12,7 @@ require.config({
     paths: {
         app: '../app',
         api: '../app/api'
-    },
-    shim: {
-        'jquery.pagination': {
-            deps: ['jquery'],
-            exports: 'jQuery.fn.pagination'
-        }
     }
-
 });
 
 // Start loading the main app file. Put all of

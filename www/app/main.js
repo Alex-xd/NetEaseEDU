@@ -2,120 +2,145 @@
  *  Created by boyuan on 8/29/16.
  */
 
-define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.pagination', 'juicer'], function ($, funtpl, API, Cookies, pagination) {
+define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function ($, funtpl, API, Cookies) {
     var index = {
         init: function () {
-            index.toptipsControl();
-            index.loginControl();
+            index.toptipsControl.init();
+            index.followControl.init();
+            index.loginControl.init();
             index.carousel();
+            index.getCourseCard(0, 20, 10);
             index.courseTabSwitch();
-            index.pagination();
             index.getHottestCourse();
             index.getIntroVideo();
-            index.paginate();
         },
-        // paginate: function () {
-        //     $('#pagination-container').pagination({
-        //         dataSource: [1, 2, 3, 4, 5, 6, 7],
-        //         callback: function (data, pagination) {
-        //             var html = Handlebars.compile($('#template-demo').html(), {
-        //                 data: data
-        //             });
-        //             $('#data-container').html(html);
-        //         }
-        //     })
-        // },
+        //缓存部分dom提高性能
+        dom: {
+            $login: $('#J_popup-login'),
+            $submit: $('#J_submit'),
+            $popupWrap: $('#J_popup-wrap'),
+            $fans_count: $('#J_fans'),
+            $followBtn: $('#J_header-left-follow-btn'),
+            $unfollowBtn: $('#J_unfollowBtn')
+        },
         //顶栏"不再提示"功能
-        toptipsControl: function () {
-            // Cookies.remove('toptipDismissed', {path: '/'});  //测试用
-            var $toptips = $('#J_top-tips');
+        toptipsControl: {
+            init: function () {
+                // Cookies.remove('toptipDismissed', {path: '/'});  //测试用
+                var $toptips = $('#J_top-tips');
 
-            if (Cookies.get('toptipDismissed', {path: '/'}) !== 'true') {
-                $toptips.fadeIn();
+                if (Cookies.get('toptipDismissed', {path: '/'}) !== 'true') {
+                    $toptips.fadeIn();
+                }
+                $('#J_top-tips-dismiss').on('click', function () {
+                    Cookies.set('toptipDismissed', 'true', {expires: 7, path: '/'});
+                    $toptips.fadeOut();
+                });
             }
-            $('#J_top-tips-dismiss').on('click', function () {
-                Cookies.set('toptipDismissed', 'true', {expires: 7, path: '/'});
-                $toptips.fadeOut();
-            });
         },
 
         //登录
-        loginControl: function () {
-            var $followBtn = $('#J_header-left-follow-btn'),
-                $login = $('#J_popup-login'),
-                $submit = $('#J_submit'),
-                $popupWrap = $('#J_popup-wrap'),
-                param = {
-                    userName: '',
-                    password: ''
+        loginControl: {
+            init: function () {
+                var self = this,
+                    dom = index.dom;
+
+                dom.$submit.on('click', self._login);
+                document.onkeydown = function (keyEvent) {
+                    keyEvent = keyEvent ? keyEvent : window.event;
+                    var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
+                    if (keyvalue === 13) {
+                        self._login();
+                    }
                 };
-
-            //点击关注,如果未登录,则显示登录窗口
-            $followBtn.on('click', function () {
-                Cookies.remove('loginSuc', {path: '/'}); //测试用
-                if (Cookies.get('loginSuc', {path: '/'}) !== 'true') {
-                    $popupWrap.show();
-                    $login.show().css('top', '+=30').animate({top: '-=30px', opacity: '1'}, 500);
-                }
-            });
-
+                $('#J_close-popup-login').on('click', function () {
+                    dom.$popupWrap.hide();
+                    dom.$login.hide();
+                });
+            },
             //登录
-            function login() {
+            _login: function () {
+                var dom = index.dom,
+                    param = {
+                        userName: '',
+                        password: ''
+                    };
+
                 param.userName = $('#J_uid').val().trim();
                 param.password = $('#J_pwd').val();
                 if (param.userName && param.password) {
-                    $submit.html('正在登录..').attr('disabled', 'true');
+                    dom.$submit.html('正在登录..').attr('disabled', 'true');
                     $.get(API.login, param, function (rsp) {
                         if (rsp == 0) {
                             Cookies.set('loginSuc', 'true', {path: '/'}); //设置登录成功 cookie,
-                            $submit.html('登录成功');
-
-                            //关注
-                            var dtd = $.Deferred();
-                            $.when(index._follow($followBtn, dtd)).done(function () {
-                                $login.hide();
-                                $popupWrap.hide();
-                            });
+                            dom.$submit.html('登录成功');
+                            index.followControl._follow();  //登录成功后关注
                         } else {
                             alert('用户密码错误,请重新输入');
-                            $submit.html('登录').removeAttr('disabled');
+                            dom.$submit.html('登录').removeAttr('disabled');
                         }
                     });
                 }
             }
-
-            //绑定登录
-            $submit.on('click', login);
-            document.onkeydown = function (keyEvent) {
-                keyEvent = keyEvent ? keyEvent : window.event;
-                var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
-                if (keyvalue == 13)
-                    login();
-            };
-
-            //登录窗口关闭
-            $('#J_close-popup-login').on('click', function () {
-                $popupWrap.hide();
-                $login.hide();
-            });
         },
 
         //关注
-        _follow: function ($followBtn, dtd) {
-            var $fans_count = $('#J_fans');
-            $.get(API.changeFollowState, function (rsp) {
-                if (rsp == 1) {
-                    Cookies.set('followSuc', 'true', {path: '/'}); //设置关注成功的 cookie(followSuc),
-                    //关注”按钮变成不可点的“已关注”状态。
-                    $followBtn.hide();
-                    $followBtn.next().show();
-                    var fans = $fans_count.html();
-                    fans++;
-                    $fans_count.html(fans);
-                    dtd.resolve();
+        followControl: {
+            init: function () {
+                var self = this,
+                    dom = index.dom;
+
+                if (Cookies.get('followSuc', {path: '/'}) === 'true') {
+                    dom.$followBtn.hide();
+                    dom.$followBtn.next().show();
                 }
-            });
-            return dtd;
+
+                dom.$followBtn.on('click', function () {
+                    // Cookies.remove('loginSuc', {path: '/'}); //测试用
+                    //点击关注,如果未登录,则显示登录窗口
+                    if (Cookies.get('loginSuc', {path: '/'}) !== 'true') {
+                        dom.$popupWrap.show();
+                        dom.$login.show().css('top', '+=30').animate({top: '-=30px', opacity: '1'}, 500);
+                    } else {
+                        self._follow();
+                    }
+                });
+
+                dom.$unfollowBtn.on('click', function () {
+                    self._unfollow();
+                });
+            },
+            _follow: function () {
+                var dom = index.dom;
+
+                $.get(API.changeFollowState, function (rsp) {
+                    if (rsp == 1) {
+                        Cookies.set('followSuc', 'true', {path: '/'}); //设置关注成功的 cookie(followSuc),
+
+                        dom.$login.hide();
+                        dom.$popupWrap.hide();
+
+                        dom.$followBtn.hide();
+                        dom.$followBtn.next().show();
+
+                        var fans = parseInt(dom.$fans_count.html());
+                        dom.$fans_count.html(fans + 1);
+                        $('#J_popUpTips').html('关注成功').fadeIn().fadeOut();
+                    }
+                });
+            },
+            _unfollow: function () {
+                var dom = index.dom;
+                //此处应有ajax告诉服务器此用户已取消关注
+                //...
+                Cookies.remove('followSuc', {path: '/'});
+                //...
+                dom.$followBtn.show();
+                dom.$followBtn.next().hide();
+                var fans = parseInt(dom.$fans_count.html());
+                dom.$fans_count.html(fans - 1);
+                $('#J_popUpTips').html('您已取消关注').fadeIn().fadeOut();
+            }
         },
 
         //轮播
@@ -164,20 +189,18 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.pagination',
 
             $btn1.on('click', function () {
                 var dtd = $.Deferred(); //新建异步对象dtd
-                $.when(index._getCourseCard(0, 20, $btn1.attr('data-type'), dtd)).done(function () {
+                $.when(index.getCourseCard(0, 20, $btn1.attr('data-type'), dtd)).done(function () {
                     $btn2.removeClass('selected');
                     $btn1.addClass('selected');
                 });
             });
             $btn2.on('click', function () {
-                var dtd = $.Deferred(); //新建异步对象dtd
-                $.when(index._getCourseCard(0, 20, $btn2.attr('data-type'), dtd)).done(function () {
+                var dtd = $.Deferred();
+                $.when(index.getCourseCard(0, 20, $btn2.attr('data-type'), dtd)).done(function () {
                     $btn1.removeClass('selected');
                     $btn2.addClass('selected');
                 });
             });
-
-            $btn1.trigger('click');
         },
 
         /**
@@ -185,10 +208,12 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.pagination',
          * @param pageNo    页码
          * @param psize     每页个数
          * @param type      分类
-         * @param dtd       jquery异步对象
+         * @param dtd       异步对象
          */
-        _getCourseCard: function (pageNo, psize, type, dtd) {
-            if ($(window).width() < 1206) psize = 15;
+        getCourseCard: function (pageNo, psize, type, dtd) {
+            if ($(window).width() < 1206) {
+                psize = 15;
+            }
             var param = {
                     pageNo: pageNo,
                     psize: psize,
@@ -203,18 +228,63 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.pagination',
                 rsp = JSON.parse(rsp);
                 tpldata.list = rsp.list;
                 $showWrap.html('');
-                //坑：用functpl处理注释的模板代码在发布压缩代码时会出问题
-                // var tpl = juicer(funtpl(index._courseTpl), tpldata);  
+                //WARN:用functpl处理注释的模板代码在压缩代码时会出问题,遂将模板插入到html中script标签内
+                // var tpl = juicer(funtpl(index._courseTpl), tpldata);
                 var tpl = juicer($('#courseTpl').html(), tpldata);
                 $showWrap.html(tpl);
+                index.paginate(rsp.pagination);//分页
 
-                $('#J_paging-next').data('rsp', rsp); //缓存返回的数据
-                // console.log($('#J_paging-next').data('rsp').pagination);
-                dtd.resolve();
+                if (dtd) {
+                    dtd.resolve();
+                }
             });
             return dtd;
         },
 
+        paginate: function (data) {
+            _draw(1);
+
+            var $next = $('#J_paging-next'),
+                $prev = $('#J_paging-prev'),
+                $numBtn = $('.course-paging-num');
+
+            $numBtn.on('click', function () {
+                _turnToPage($(this).html());
+            });
+
+
+            //根据页数动态渲染数字
+            function _draw(onPage) {
+                var wrap = $('#J_numWrap'),
+                    tpl;
+
+                try {
+                    for (var i = 1; i <= data.totlePageCount; i++) {
+                        if (i == onPage) {
+                            tpl = wrap.html() + '\<a href="javascript:;" class="course-paging-num on">' + i + '\</a>';
+                        }
+                        else {
+                            tpl = wrap.html() + '\<a href="javascript:;" class="course-paging-num">' + i + '\</a>';
+                        }
+                        wrap.html(tpl);
+                    }
+                    wrap.html(tpl);
+                } catch (e) {
+                    throw new Error(e.message + '   可能的原因:data.totlePageCount不存在,请检查json返回数据。');
+                }
+            }
+
+            function _turnToPage(pageNum) {
+                var type = $('#J_course-selectTab a.selected').attr('data-type');
+
+                var dtd = $.Deferred();
+                $.when(index.getCourseCard(pageNum, data.pageSize, type, dtd)).done(function () {
+                    $numBtn.removeClass('on');
+                    console.log(1);
+                    $numBtn.eq(pageNum - 1).addClass('on');
+                });
+            }
+        },
         //分页
         pagination: function () {
             var $numBtn = $('.course-paging-num'),
@@ -310,58 +380,6 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.pagination',
                 $popupWrap.hide();
             });
         }
-
-        // //课程模板
-        // _courseTpl: function() {
-
-        //      {@each list as item}
-        //      <section class="course-list-item">
-        //      <img src="${item.middlePhotoUrl}" alt="" width="223" height="124">
-        //      <h2 class="course-list-item-title">${item.name}</h2>
-        //      <a href="" class="course-list-item-author">极客公园</a>
-        //      <span class="course-list-item-people">465</span>
-        //      <h3 class="course-list-item-price">¥59</h3>
-        //      <!--详情-->
-        //      <section class="course-list-item-details">
-        //      <div class="course-list-item-details-header">
-        //      <img src="${item.middlePhotoUrl}" alt="" width="223" height="124">
-        //      <div class="course-list-item-details-header-info">
-        //      <h3 class="course-list-item-details-header-info-title">${item.name}</h3>
-        //      <div class="course-list-item-details-header-info-leaner">
-        //      ${item.learnerCount} 人在学
-        //      </div>
-        //      <div class="course-list-item-details-header-info-distor">
-        //      发布者: <a href="${item.providerLink}" target="_blank">${item.provider}</a>
-        //      </div>
-        //      {@if item.categoryName == null}
-        //         <div class="course-list-item-details-header-info-category">分类: 暂无</div> 
-        //      {@else}
-        //         <div class="course-list-item-details-header-info-category">分类: ${item.item.categoryName}</div> 
-        //      {@/if}
-        //      </div>
-        //      </div>
-        //      <div class="course-list-item-details-content">
-        //      <p>${item.providerDesc}</p>
-        //      </div>
-        //      </section>
-        //      </section>
-        //      {@/each}
-
-        // },
-
-        // //侧边栏内容模板
-        // _sidebarTpl: function() {
-
-        //      {@each list as item}
-        //      <div class="sidebar-hottest-item">
-        //      <img src="${item.smallPhotoUrl}" alt="${item.name}">
-        //      <h3>${item.name}</h3>
-        //      <span>${item.learnerCount}</span>
-        //      </div>
-        //      {@/each}
-
-        // }
     };
-
     index.init();
 });

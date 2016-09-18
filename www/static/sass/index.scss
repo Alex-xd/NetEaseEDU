@@ -425,44 +425,58 @@
         bottom: 0;
         height: 20px;
         margin-top: 28px;
-        > a {
+        &-numWrap {
             display: inline-block;
-            float: left;
+            overflow: hidden;
+            width: 245px;
             height: 20px;
-            &:hover {
-                cursor: pointer;
-            }
-            &:first-child {
-                margin-right: 8px;
-            }
-            &:last-child {
-                margin-left: 8px;
+            > a {
+                display: inline-block;
+                float: left;
+                width: 20px;
+                height: 20px;
+                line-height: 20px;
+                margin-right: 5px;
+                margin-left: 5px;
+                font-size: 14px;
+                text-align: center;
+                color: $darkGray;
+                &:hover {
+                    cursor: pointer;
+                }
+                &:first-child {
+                    margin-right: 8px;
+                }
+                &:last-child {
+                    margin-left: 8px;
+                }
+                &:hover {
+                    color: #fff;
+                    background-color: #9dd8b1;
+                }
+                &.on {
+                    color: $mainGreen;
+                }
             }
         }
-        &-num {
-            width: 20px;
+        &-prev,
+        &-next {
+            display: inline-block;
+            width: 30px;
+            height: 20px;
             line-height: 20px;
             margin-right: 5px;
             margin-left: 5px;
             font-size: 14px;
             text-align: center;
             color: $darkGray;
-            &:hover {
-                color: #fff;
-                background-color: #9dd8b1;
-            }
-            &.on {
-                color: $mainGreen;
-            }
-        }
-        &-prev,
-        &-next {
-            width: 30px;
         }
         &-prev {
+            float: left;
             background: url("../img/page-left-arrow.gif") no-repeat;
         }
         &-next {
+            float: right;
             background: url("../img/page-right-arrow.gif") no-repeat;
         }
     }
@@ -721,4 +735,24 @@ footer {
         height: 12px;
         background: url("../img/close.gif") no-repeat;
     }
+}
+
+//提示弹窗
+//--------------------
+.popUpTips {
+    position: fixed;
+    z-index: 11;
+    top: 50%;
+    left: 50%;
+    display: none;
+    width: 200px;
+    height: 60px;
+    line-height: 60px;
+    margin-top: -100px;
+    margin-left: -30px;
+    font-size: 16px;
+    text-align: center;
+    color: $darkGray;
+    border-radius: 5px;
+    background: #fff;
 }
