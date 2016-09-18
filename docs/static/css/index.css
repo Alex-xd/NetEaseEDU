@@ -468,34 +468,48 @@ body {
     bottom: 0;
     height: 20px;
     margin-top: 28px; }
-    .course-paging > a {
+    .course-paging-numWrap {
       display: inline-block;
-      float: left;
+      overflow: hidden;
+      width: 245px;
       height: 20px; }
-      .course-paging > a:hover {
-        cursor: pointer; }
-      .course-paging > a:first-child {
-        margin-right: 8px; }
-      .course-paging > a:last-child {
-        margin-left: 8px; }
-    .course-paging-num {
-      width: 20px;
+      .course-paging-numWrap > a {
+        display: inline-block;
+        float: left;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+        margin-right: 5px;
+        margin-left: 5px;
+        font-size: 14px;
+        text-align: center;
+        color: #333; }
+        .course-paging-numWrap > a:hover {
+          cursor: pointer; }
+        .course-paging-numWrap > a:first-child {
+          margin-right: 8px; }
+        .course-paging-numWrap > a:last-child {
+          margin-left: 8px; }
+        .course-paging-numWrap > a:hover {
+          color: #fff;
+          background-color: #9dd8b1; }
+        .course-paging-numWrap > a.on {
+          color: #39a030; }
+    .course-paging-prev, .course-paging-next {
+      display: inline-block;
+      width: 30px;
+      height: 20px;
       line-height: 20px;
       margin-right: 5px;
       margin-left: 5px;
       font-size: 14px;
       text-align: center;
       color: #333; }
-      .course-paging-num:hover {
-        color: #fff;
-        background-color: #9dd8b1; }
-      .course-paging-num.on {
-        color: #39a030; }
-    .course-paging-prev, .course-paging-next {
-      width: 30px; }
     .course-paging-prev {
+      float: left;
       background: url("../img/page-left-arrow.gif") no-repeat; }
     .course-paging-next {
+      float: right;
       background: url("../img/page-right-arrow.gif") no-repeat; }
 .sidebar {
   float: left;
@@ -702,3 +716,19 @@ footer {
     width: 12px;
     height: 12px;
     background: url("../img/close.gif") no-repeat; }
+.popUpTips {
+  position: fixed;
+  z-index: 11;
+  top: 50%;
+  left: 50%;
+  display: none;
+  width: 200px;
+  height: 60px;
+  line-height: 60px;
+  margin-top: -100px;
+  margin-left: -30px;
+  font-size: 16px;
+  text-align: center;
+  color: #333;
+  border-radius: 5px;
+  background: #fff; }

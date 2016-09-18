@@ -1,12 +1,4 @@
 
-lib/jquery_pagination/src/demo/demo.css
-----------------
-lib/jquery_pagination/src/demo/demo.css
-
-lib/jquery_pagination/src/pagination.css
-----------------
-lib/jquery_pagination/src/pagination.css
-
 static/css/index.css
 ----------------
 static/css/lib/reset.css
