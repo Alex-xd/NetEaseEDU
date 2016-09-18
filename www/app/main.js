@@ -9,7 +9,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function 
             index.followControl.init();
             index.loginControl.init();
             index.carousel();
-            index.getCourseCard(0, 20, 10);
+            index.getCourseCard(1, 20, 10);
             index.courseTabSwitch();
             index.getHottestCourse();
             index.getIntroVideo();
@@ -232,8 +232,8 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function 
                 // var tpl = juicer(funtpl(index._courseTpl), tpldata);
                 var tpl = juicer($('#courseTpl').html(), tpldata);
                 $showWrap.html(tpl);
-                index.paginate(rsp.pagination);//分页
 
+                index.paginate(rsp.pagination); //分页
                 if (dtd) {
                     dtd.resolve();
                 }
@@ -242,7 +242,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function 
         },
 
         paginate: function (data) {
-            _draw(1);
+            _draw();
 
             var $next = $('#J_paging-next'),
                 $prev = $('#J_paging-prev'),
@@ -251,38 +251,42 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function 
             $numBtn.on('click', function () {
                 _turnToPage($(this).html());
             });
-
+            $next.on('click', function () {
+                $('.course-paging-num.on').next().trigger('click');
+            });
+            $prev.on('click', function () {
+                $('.course-paging-num.on').prev().trigger('click');
+            });
 
             //根据页数动态渲染数字
-            function _draw(onPage) {
+            function _draw() {
                 var wrap = $('#J_numWrap'),
                     tpl;
 
                 try {
-                    for (var i = 1; i <= data.totlePageCount; i++) {
-                        if (i == onPage) {
-                            tpl = wrap.html() + '\<a href="javascript:;" class="course-paging-num on">' + i + '\</a>';
-                        }
-                        else {
-                            tpl = wrap.html() + '\<a href="javascript:;" class="course-paging-num">' + i + '\</a>';
-                        }
+                    wrap.html('');
+                    for (var i=1; i <= data.totlePageCount; i++) {
+                        tpl = wrap.html() + '\<a href="javascript:;" class="course-paging-num">' + i + '\</a>';
                         wrap.html(tpl);
                     }
                     wrap.html(tpl);
+
+                    var $numBtn = $('.course-paging-num');
+                    $numBtn.removeClass('on');
+                    $numBtn.eq(data.pageIndex - 1).addClass('on');
                 } catch (e) {
                     throw new Error(e.message + '   可能的原因:data.totlePageCount不存在,请检查json返回数据。');
                 }
             }
 
+            //此处经验证是后台接口有问题,超过第四页以后返回的数据都是相同的,但页码永远停留在第4页
             function _turnToPage(pageNum) {
                 var type = $('#J_course-selectTab a.selected').attr('data-type');
 
-                var dtd = $.Deferred();
-                $.when(index.getCourseCard(pageNum, data.pageSize, type, dtd)).done(function () {
-                    $numBtn.removeClass('on');
-                    console.log(1);
-                    $numBtn.eq(pageNum - 1).addClass('on');
-                });
+                if (pageNum > 4) {
+                    console.error('此处后台接口有问题,超过第四页以后返回的数据都是相同的,但页码永远停留在第4页');
+                }
+                index.getCourseCard(pageNum, data.pageSize, type);
             }
         },
         //分页

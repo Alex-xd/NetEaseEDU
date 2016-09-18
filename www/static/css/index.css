@@ -369,45 +369,37 @@ body {
     bottom: 0;
     height: 20px;
     margin-top: 28px; }
-
-.course-paging-numWrap {
+    .course-paging-numWrap {
       display: inline-block;
-  overflow: hidden;
-  width: 245px;
+      overflow: hidden;
+      width: 245px;
       height: 20px; }
-
-.course-paging-numWrap > a {
-  display: inline-block;
-  float: left;
-  width: 20px;
-  height: 20px;
-  line-height: 20px;
-  margin-right: 5px;
-  margin-left: 5px;
-  font-size: 14px;
-  text-align: center;
-  color: #333; }
-
-.course-paging-numWrap > a:hover {
-  cursor: pointer; }
-
-.course-paging-numWrap > a:first-child {
-  margin-right: 8px; }
-
-.course-paging-numWrap > a:last-child {
-  margin-left: 8px; }
-
-.course-paging-numWrap > a:hover {
-  color: #fff;
-  background-color: #9dd8b1; }
-
-.course-paging-numWrap > a.on {
-  color: #39a030; }
-
-.course-paging-prev, .course-paging-next {
-  display: inline-block;
-  width: 30px;
-  height: 20px;
+      .course-paging-numWrap > a {
+        display: inline-block;
+        float: left;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+        margin-right: 5px;
+        margin-left: 5px;
+        font-size: 14px;
+        text-align: center;
+        color: #333; }
+        .course-paging-numWrap > a:hover {
+          cursor: pointer; }
+        .course-paging-numWrap > a:first-child {
+          margin-right: 8px; }
+        .course-paging-numWrap > a:last-child {
+          margin-left: 8px; }
+        .course-paging-numWrap > a:hover {
+          color: #fff;
+          background-color: #9dd8b1; }
+        .course-paging-numWrap > a.on {
+          color: #39a030; }
+    .course-paging-prev, .course-paging-next {
+      display: inline-block;
+      width: 30px;
+      height: 20px;
       line-height: 20px;
       margin-right: 5px;
       margin-left: 5px;
