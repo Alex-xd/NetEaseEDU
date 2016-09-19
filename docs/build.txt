@@ -23,6 +23,7 @@ lib/jquery.js
 lib/funcTpl.js
 app/api/api.config.js
 lib/js.cookie.js
-lib/juicer.js
+lib/jquery.md5.js
+lib/Juicer.js
 app/main.js
 app.js
