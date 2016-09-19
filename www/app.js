@@ -12,7 +12,13 @@ require.config({
     paths: {
         app: '../app',
         api: '../app/api'
+    },
+    shim: {
+        'jquery.md5': {
+            deps: ['jquery']
+        }
     }
+
 });
 
 // Start loading the main app file. Put all of

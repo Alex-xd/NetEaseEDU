@@ -2,7 +2,7 @@
  *  Created by boyuan on 8/29/16.
  */
 
-define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function ($, funtpl, API, Cookies) {
+define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juicer'], function ($, funtpl, API, Cookies) {
     var index = {
         init: function () {
             index.toptipsControl.init();
@@ -26,7 +26,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function 
         //顶栏"不再提示"功能
         toptipsControl: {
             init: function () {
-                // Cookies.remove('toptipDismissed', {path: '/'});  //测试用
+                // Cookies.remove('toptipDismissed', {path: '/'});  //FIXME:测试用
                 var $toptips = $('#J_top-tips');
 
                 if (Cookies.get('toptipDismissed', {path: '/'}) !== 'true') {
@@ -67,11 +67,11 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function 
                     };
 
                 param.userName = $('#J_uid').val().trim();
-                param.password = $('#J_pwd').val();
+                param.password = $.md5($('#J_pwd').val());
                 if (param.userName && param.password) {
                     dom.$submit.html('正在登录..').attr('disabled', 'true');
                     $.get(API.login, param, function (rsp) {
-                        if (rsp == 0) {
+                        if (rsp == 0) {//FIXME:此处接口有问题,使用所提供的账号密码无法登陆,顾设置返回0时为登录成功
                             Cookies.set('loginSuc', 'true', {path: '/'}); //设置登录成功 cookie,
                             dom.$submit.html('登录成功');
                             index.followControl._follow();  //登录成功后关注
@@ -96,7 +96,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function 
                 }
 
                 dom.$followBtn.on('click', function () {
-                    // Cookies.remove('loginSuc', {path: '/'}); //测试用
+                    // Cookies.remove('loginSuc', {path: '/'}); //FIXME:测试用
                     //点击关注,如果未登录,则显示登录窗口
                     if (Cookies.get('loginSuc', {path: '/'}) !== 'true') {
                         dom.$popupWrap.show();
@@ -131,8 +131,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function 
             },
             _unfollow: function () {
                 var dom = index.dom;
-                //此处应有ajax告诉服务器此用户已取消关注
-                //...
+                //TODO:此处应有ajax告诉服务器此用户已取消关注
                 Cookies.remove('followSuc', {path: '/'});
                 //...
                 dom.$followBtn.show();
@@ -265,7 +264,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'juicer'], function 
 
                 try {
                     wrap.html('');
-                    for (var i=1; i <= data.totlePageCount; i++) {
+                    for (var i = 1; i <= data.totlePageCount; i++) {
                         tpl = wrap.html() + '\<a href="javascript:;" class="course-paging-num">' + i + '\</a>';
                         wrap.html(tpl);
                     }
