@@ -282,7 +282,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
             function _turnToPage(pageNum) {
                 var type = $('#J_course-selectTab a.selected').attr('data-type');
 
-                if (pageNum > 4) {
+                if (pageNum > 4) {//FIXME:此处后台接口有问题,超过第四页以后返回的数据都是相同的,但页码永远停留在第4页
                     console.error('此处后台接口有问题,超过第四页以后返回的数据都是相同的,但页码永远停留在第4页');
                 }
                 index.getCourseCard(pageNum, data.pageSize, type);
