@@ -66,12 +66,12 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
                         password: ''
                     };
 
-                param.userName = $('#J_uid').val().trim();
+                param.userName = $.md5($('#J_uid').val().trim());
                 param.password = $.md5($('#J_pwd').val());
                 if (param.userName && param.password) {
                     dom.$submit.html('正在登录..').attr('disabled', 'true');
                     $.get(API.login, param, function (rsp) {
-                        if (rsp == 0) {//FIXME:此处接口有问题,使用所提供的账号密码无法登陆,顾设置返回0时为登录成功
+                        if (rsp == 1) {
                             Cookies.set('loginSuc', 'true', {path: '/'}); //设置登录成功 cookie,
                             dom.$submit.html('登录成功');
                             index.followControl._follow();  //登录成功后关注
