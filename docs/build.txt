@@ -1,17 +1,7 @@
 
 static/css/index.css
 ----------------
-static/css/lib/reset.css
 static/css/index.css
-
-static/css/lib/reset.css
-----------------
-static/css/lib/reset.css
-
-static/css/narrow.css
-----------------
-static/css/lib/reset.css
-static/css/narrow.css
 
 static/sass/lib/_reset.css
 ----------------

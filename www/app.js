@@ -11,7 +11,8 @@ require.config({
     baseUrl: 'lib',
     paths: {
         app: '../app',
-        api: '../app/api'
+        api: '../app/api',
+        modules: '../modules'
     },
     shim: {
         'jquery.md5': {

@@ -9,8 +9,8 @@ require(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juic
             index.followControl.init();
             index.loginControl.init();
 
-            var dtd=$.Deferred();
-            $.when(index.getCourseCard(1, 20, 10,dtd)).done(index.loadBanners);
+            var dtd = $.Deferred();
+            $.when(index.getCourseCard(1, 20, 10, dtd)).done(index.loadBanners);
 
             index.courseTabSwitch();
             index.getHottestCourse();
