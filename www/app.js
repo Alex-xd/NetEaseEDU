@@ -1,5 +1,5 @@
 /**
- *  Created by boyuan on 8/29/16. 用volo构建
+ *  Created by Alexxd on 8/29/16. 用volo构建
  */
 
 // For any third party dependencies, like jQuery, place them in the lib folder.

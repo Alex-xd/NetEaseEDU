@@ -1,0 +1,1 @@
+define([],function(){return function(e){return e.toString().replace(/^[^\/]+\/\*!?/,"").replace(/\*\/[^\/]+$/,"")}});

@@ -1,18 +1,21 @@
 /**
- *  Created by boyuan on 8/29/16.
+ *  Created by Alexxd on 8/29/16.
  */
 
-define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juicer'], function ($, funtpl, API, Cookies) {
+require(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juicer'], function($, funtpl, API, Cookies) {
     var index = {
-        init: function () {
+        init: function() {
             index.toptipsControl.init();
             index.followControl.init();
             index.loginControl.init();
-            index.carousel();
-            index.getCourseCard(1, 20, 10);
+
+            var dtd=$.Deferred();
+            $.when(index.getCourseCard(1, 20, 10,dtd)).done(index.loadBanners);
+
             index.courseTabSwitch();
             index.getHottestCourse();
             index.getIntroVideo();
+            index.carousel();
         },
         //缓存部分dom提高性能
         dom: {
@@ -23,17 +26,24 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
             $followBtn: $('#J_header-left-follow-btn'),
             $unfollowBtn: $('#J_unfollowBtn')
         },
+        //加载banner图片
+        loadBanners: function() {
+            var imgs = $('.lz-load');
+            imgs.each(function() {
+                $(this).attr('src', $(this).attr('lz-src'));
+            });
+        },
         //顶栏"不再提示"功能
         toptipsControl: {
-            init: function () {
+            init: function() {
                 // Cookies.remove('toptipDismissed', {path: '/'});  //FIXME:测试用
                 var $toptips = $('#J_top-tips');
 
-                if (Cookies.get('toptipDismissed', {path: '/'}) !== 'true') {
+                if (Cookies.get('toptipDismissed', { path: '/' }) !== 'true') {
                     $toptips.fadeIn();
                 }
-                $('#J_top-tips-dismiss').on('click', function () {
-                    Cookies.set('toptipDismissed', 'true', {expires: 7, path: '/'});
+                $('#J_top-tips-dismiss').on('click', function() {
+                    Cookies.set('toptipDismissed', 'true', { expires: 7, path: '/' });
                     $toptips.fadeOut();
                 });
             }
@@ -41,25 +51,25 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
 
         //登录
         loginControl: {
-            init: function () {
+            init: function() {
                 var self = this,
                     dom = index.dom;
 
                 dom.$submit.on('click', self._login);
-                document.onkeydown = function (keyEvent) {
+                document.onkeydown = function(keyEvent) {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue === 13) {
                         self._login();
                     }
                 };
-                $('#J_close-popup-login').on('click', function () {
+                $('#J_close-popup-login').on('click', function() {
                     dom.$popupWrap.hide();
                     dom.$login.hide();
                 });
             },
             //登录
-            _login: function () {
+            _login: function() {
                 var dom = index.dom,
                     param = {
                         userName: '',
@@ -70,11 +80,11 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
                 param.password = $.md5($('#J_pwd').val());
                 if (param.userName && param.password) {
                     dom.$submit.html('正在登录..').attr('disabled', 'true');
-                    $.get(API.login, param, function (rsp) {
+                    $.get(API.login, param, function(rsp) {
                         if (rsp == 1) {
-                            Cookies.set('loginSuc', 'true', {path: '/'}); //设置登录成功 cookie,
+                            Cookies.set('loginSuc', 'true', { path: '/' }); //设置登录成功 cookie,
                             dom.$submit.html('登录成功');
-                            index.followControl._follow();  //登录成功后关注
+                            index.followControl._follow(); //登录成功后关注
                         } else {
                             alert('用户密码错误,请重新输入');
                             dom.$submit.html('登录').removeAttr('disabled');
@@ -86,36 +96,36 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
 
         //关注
         followControl: {
-            init: function () {
+            init: function() {
                 var self = this,
                     dom = index.dom;
 
-                if (Cookies.get('followSuc', {path: '/'}) === 'true') {
+                if (Cookies.get('followSuc', { path: '/' }) === 'true') {
                     dom.$followBtn.hide();
                     dom.$followBtn.next().show();
                 }
 
-                dom.$followBtn.on('click', function () {
+                dom.$followBtn.on('click', function() {
                     // Cookies.remove('loginSuc', {path: '/'}); //FIXME:测试用
                     //点击关注,如果未登录,则显示登录窗口
-                    if (Cookies.get('loginSuc', {path: '/'}) !== 'true') {
+                    if (Cookies.get('loginSuc', { path: '/' }) !== 'true') {
                         dom.$popupWrap.show();
-                        dom.$login.show().css('top', '+=30').animate({top: '-=30px', opacity: '1'}, 500);
+                        dom.$login.show().css('top', '+=30').animate({ top: '-=30px', opacity: '1' }, 500);
                     } else {
                         self._follow();
                     }
                 });
 
-                dom.$unfollowBtn.on('click', function () {
+                dom.$unfollowBtn.on('click', function() {
                     self._unfollow();
                 });
             },
-            _follow: function () {
+            _follow: function() {
                 var dom = index.dom;
 
-                $.get(API.changeFollowState, function (rsp) {
+                $.get(API.changeFollowState, function(rsp) {
                     if (rsp == 1) {
-                        Cookies.set('followSuc', 'true', {path: '/'}); //设置关注成功的 cookie(followSuc),
+                        Cookies.set('followSuc', 'true', { path: '/' }); //设置关注成功的 cookie(followSuc),
 
                         dom.$login.hide();
                         dom.$popupWrap.hide();
@@ -129,10 +139,10 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
                     }
                 });
             },
-            _unfollow: function () {
+            _unfollow: function() {
                 var dom = index.dom;
                 //TODO:此处应有ajax告诉服务器此用户已取消关注
-                Cookies.remove('followSuc', {path: '/'});
+                Cookies.remove('followSuc', { path: '/' });
                 //...
                 dom.$followBtn.show();
                 dom.$followBtn.next().hide();
@@ -143,26 +153,26 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
         },
 
         //轮播
-        carousel: function () {
+        carousel: function() {
             var $banner = $('#J_banner'),
                 $imgs = $('.J_carousel-imgs'),
                 $dots = $('#J_banner-dots span'),
                 bindex = 1,
                 timer = null;
 
-            $banner.on('mouseover', function () {
+            $banner.on('mouseover', function() {
                 clearInterval(timer);
             });
-            $banner.on('mouseout', function () {
+            $banner.on('mouseout', function() {
                 autoPlay();
             });
-            $dots.on('click', function () {
+            $dots.on('click', function() {
                 var _index = $(this).attr('data-id');
                 _turnToBanner(_index);
             });
 
             function autoPlay() {
-                timer = setInterval(function () {
+                timer = setInterval(function() {
                     _turnToBanner(bindex);
                     bindex++;
                     if (bindex > 2) {
@@ -182,20 +192,20 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
         },
 
         //课程tab切换
-        courseTabSwitch: function () {
+        courseTabSwitch: function() {
             var $btn1 = $('#J_course-selectTab a:first'),
                 $btn2 = $btn1.next();
 
-            $btn1.on('click', function () {
+            $btn1.on('click', function() {
                 var dtd = $.Deferred(); //新建异步对象dtd
-                $.when(index.getCourseCard(0, 20, $btn1.attr('data-type'), dtd)).done(function () {
+                $.when(index.getCourseCard(0, 20, $btn1.attr('data-type'), dtd)).done(function() {
                     $btn2.removeClass('selected');
                     $btn1.addClass('selected');
                 });
             });
-            $btn2.on('click', function () {
+            $btn2.on('click', function() {
                 var dtd = $.Deferred();
-                $.when(index.getCourseCard(0, 20, $btn2.attr('data-type'), dtd)).done(function () {
+                $.when(index.getCourseCard(0, 20, $btn2.attr('data-type'), dtd)).done(function() {
                     $btn1.removeClass('selected');
                     $btn2.addClass('selected');
                 });
@@ -209,7 +219,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
          * @param type      分类
          * @param dtd       异步对象
          */
-        getCourseCard: function (pageNo, psize, type, dtd) {
+        getCourseCard: function(pageNo, psize, type, dtd) {
             if ($(window).width() < 1206) {
                 psize = 15;
             }
@@ -221,7 +231,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
                 $showWrap = $('#J_course-list');
 
             $showWrap.html('课程列表加载中...');
-            $.get(API.getCoures, param, function (rsp) {
+            $.get(API.getCoures, param, function(rsp) {
                 var tpldata = {};
 
                 rsp = JSON.parse(rsp);
@@ -240,20 +250,20 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
             return dtd;
         },
 
-        paginate: function (data) {
+        paginate: function(data) {
             _draw();
 
             var $next = $('#J_paging-next'),
                 $prev = $('#J_paging-prev'),
                 $numBtn = $('.course-paging-num');
 
-            $numBtn.on('click', function () {
+            $numBtn.on('click', function() {
                 _turnToPage($(this).html());
             });
-            $next.on('click', function () {
+            $next.on('click', function() {
                 $('.course-paging-num.on').next().trigger('click');
             });
-            $prev.on('click', function () {
+            $prev.on('click', function() {
                 $('.course-paging-num.on').prev().trigger('click');
             });
 
@@ -282,25 +292,25 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
             function _turnToPage(pageNum) {
                 var type = $('#J_course-selectTab a.selected').attr('data-type');
 
-                if (pageNum > 4) {//FIXME:此处后台接口有问题,超过第四页以后返回的数据都是相同的,但页码永远停留在第4页
+                if (pageNum > 4) { //FIXME:此处后台接口有问题,超过第四页以后返回的数据都是相同的,但页码永远停留在第4页
                     console.error('此处后台接口有问题,超过第四页以后返回的数据都是相同的,但页码永远停留在第4页');
                 }
                 index.getCourseCard(pageNum, data.pageSize, type);
             }
         },
         //分页
-        pagination: function () {
+        pagination: function() {
             var $numBtn = $('.course-paging-num'),
                 $next = $('#J_paging-next'),
                 $prev = $('#J_paging-prev');
 
-            $numBtn.on('click', function () {
+            $numBtn.on('click', function() {
                 turnToPage($(this).html());
             });
-            $next.on('click', function () {
+            $next.on('click', function() {
                 $('.course-paging-num.on').next().trigger('click');
             });
-            $prev.on('click', function () {
+            $prev.on('click', function() {
                 $('.course-paging-num.on').prev().trigger('click');
             });
 
@@ -308,7 +318,7 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
                 var type = $('#J_course-selectTab a.selected').attr('data-type');
 
                 var dtd = $.Deferred();
-                $.when(index._getCourseCard(_index, 20, type, dtd)).done(function () {
+                $.when(index._getCourseCard(_index, 20, type, dtd)).done(function() {
                     $numBtn.removeClass('on');
                     $numBtn.eq(_index - 1).addClass('on');
                 });
@@ -317,8 +327,8 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
         },
 
         //侧栏
-        getHottestCourse: function () {
-            $.get(API.getHotcoures, function (rsp) {
+        getHottestCourse: function() {
+            $.get(API.getHotcoures, function(rsp) {
                 var tpldata = {},
                     $showWrap = $('#juicer-hottest-wrapper');
 
@@ -333,12 +343,12 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
                 var originTop = $showWrap.offset().top,
                     offsetTop = originTop;
 
-                var timer = setInterval(function () {
-                    $showWrap.animate({top: '-=71px'}, 500);
+                var timer = setInterval(function() {
+                    $showWrap.animate({ top: '-=71px' }, 500);
                     offsetTop = offsetTop - 71;
 
                     if (originTop - offsetTop > 639) {
-                        $showWrap.animate({top: 0}, 1500);
+                        $showWrap.animate({ top: 0 }, 1500);
                         offsetTop = originTop;
                     }
 
@@ -346,16 +356,16 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
                 }, 5000);
 
 
-                $showWrap.on('mouseover', function () {
+                $showWrap.on('mouseover', function() {
                     clearInterval(timer);
                 });
-                $showWrap.on('mouseout', function () {
-                    timer = setInterval(function () {
-                        $showWrap.animate({top: '-=71px'}, 500);
+                $showWrap.on('mouseout', function() {
+                    timer = setInterval(function() {
+                        $showWrap.animate({ top: '-=71px' }, 500);
                         offsetTop = offsetTop - 71;
 
                         if (originTop - offsetTop > 639) {
-                            $showWrap.animate({top: 0}, 1500);
+                            $showWrap.animate({ top: 0 }, 1500);
                             offsetTop = originTop;
                         }
                     }, 5000);
@@ -364,20 +374,20 @@ define(['jquery', 'funcTpl', 'api/api.config', 'js.cookie', 'jquery.md5', 'Juice
         },
 
         //视频
-        getIntroVideo: function () {
+        getIntroVideo: function() {
             var $preview = $('#J_sidebar-org-video'),
                 $popupVideo = $('#J_popup-video'),
                 $video = $popupVideo.find('video'),
                 $popupWrap = $('#J_popup-wrap');
 
-            $preview.on('click', function () {
+            $preview.on('click', function() {
                 $popupVideo.fadeIn(1000);
                 $video.attr('src', 'http://mov.bn.netease.com/open-movie/nos/mp4/2014/12/30/SADQ86F5S_shd.mp4');
                 $popupWrap.show();
 
             });
 
-            $('#J_close-popup-video').on('click', function () {
+            $('#J_close-popup-video').on('click', function() {
                 $video.attr('src', '');
                 $popupVideo.hide();
                 $popupWrap.hide();

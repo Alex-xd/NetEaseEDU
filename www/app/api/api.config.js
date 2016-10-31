@@ -1,7 +1,3 @@
-/**
- *  Created by boyuan on 8/29/16.
- */
-
 define(function () {
     return {
         getCoures: 'http://study.163.com/webDev/couresByCategory.htm',
